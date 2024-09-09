@@ -12,9 +12,10 @@ jobs:
       uses: actions/checkout@v3  # استفاده از نسخه v3
 
     - name: Set up JDK 11
-      uses: actions/setup-java@v3  # استفاده از نسخه v3
+      uses: actions/setup-java@v3  # به‌روزرسانی به نسخه v3
       with:
         java-version: '11'
+        distribution: 'temurin'  # استفاده از جاوای Temurin
 
     - name: Download GROBID
       run: |
@@ -34,4 +35,4 @@ jobs:
 
     - name: Test GROBID API
       run: |
-        curl -F "input=@./2024-05-30 - Food - EN.pdf" localhost:8070/api/processHeaderDocument
+        curl -F "input=@./2024-05-30%20-%20Food%20-%20EN.pdf" localhost:8070/api/processHeaderDocument

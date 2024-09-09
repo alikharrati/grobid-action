@@ -5,17 +5,27 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest  # اجرای در سرور ابونتو
+    runs-on: ubuntu-latest  # استفاده از اوبونتو برای اجرا
 
     steps:
     - name: Checkout the repository
-      uses: actions/checkout@v3  # استفاده از نسخه v3
+      uses: actions/checkout@v3  # به‌روزرسانی به نسخه v3
 
     - name: Set up JDK 11
-      uses: actions/setup-java@v3  # به‌روزرسانی به نسخه v3
+      uses: actions/setup-java@v3  # استفاده از نسخه v3
       with:
         java-version: '11'
         distribution: 'temurin'  # استفاده از جاوای Temurin
+
+    - name: Cache Gradle packages
+      uses: actions/cache@v3  # استفاده از کش برای بهینه‌سازی سرعت
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle
 
     - name: Download GROBID
       run: |
@@ -32,7 +42,8 @@ jobs:
         cd grobid-master
         ./gradlew run &
         sleep 10  # به GROBID زمان اجرا بدهید
+        curl http://localhost:8070/  # بررسی اجرای سرویس GROBID
 
     - name: Test GROBID API
       run: |
-        curl -F "input=@./2024-05-30%20-%20Food%20-%20EN.pdf" localhost:8070/api/processHeaderDocument
+        curl -v -F "input=@./2024-05-30%20-%20Food%20-%20EN.pdf" localhost:8070/api/processHeaderDocument
